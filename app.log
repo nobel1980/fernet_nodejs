@@ -1,0 +1,1 @@
+{ "RequestType": "Setup Login", "timestamp": "2024-08-15T17:00:12.235+06:00", "statusCode": 200, "url" : "http://152.69.210.188:8088/efdms/services/api/auth/signin", "request" : {"username":"appuser","password":"G3n3x#"},"response" : {"accessToken":null,"tokenType":"Bearer","refreshToken":null,"statusCode":200,"timestamp":1723719599030,"otp":451292,"message":"OK","expiresIn":0}}
