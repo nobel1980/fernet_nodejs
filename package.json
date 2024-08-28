@@ -1,12 +1,12 @@
 {
   "name": "nbrtax",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon tut69.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Shahidul Islam Akand",
   "license": "ISC",
   "description": "",
   "dependencies": {
@@ -15,6 +15,10 @@
     "express": "^4.19.2",
     "fernet-nodejs": "^1.0.6",
     "luxon": "^3.5.0",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }
