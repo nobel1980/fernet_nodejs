@@ -21,6 +21,7 @@ const {formattedTimestamp } = require('./utils');
 const authRoutes = require('./routes/authRoutes');
 const invoicesRoutes = require('./routes/invoicesRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const itemsRoutes = require('./routes/itemsRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const cryptoRoutes = require('./routes/cryptoRoutes');
 
@@ -35,10 +36,10 @@ app.disable('x-powered-by');
 // Route mappings
 app.use('/api/auth', authRoutes);
 app.use('/api/invoices', invoicesRoutes);
-app.use('/api/inventory', inventoryRoutes );
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/items', itemsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/crypto', cryptoRoutes);
-
 
 app.use((err, req, res, next) => {
     //console.error(err.stack);

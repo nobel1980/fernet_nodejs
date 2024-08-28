@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const itemsController = require('../controllers/itemsController');
 
-// GET /api/items/create
-router.get('/create', itemsController.createItem);
+// 11. POST /api/items/create
+router.post('/create', itemsController.createItem);
 
-// PUT /api/items/edit/:itemId
-router.put('/edit/:itemId', itemsController.editItem);
+// 12. PUT /api/items/edit/:itemId
+router.put('/:itemId', itemsController.editItem);
 
-// GET /api/items/:binHolder/bin
+// 13. GET /api/items/:binHolder/bin
 router.get('/:binHolder/bin', itemsController.getItemsByBinHolder);
 
 module.exports = router;

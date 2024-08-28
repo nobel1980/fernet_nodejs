@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventoryController');
 
-// GET /api/inventory/devices/sysdate
+// 5. GET /api/inventory/devices/sysdate
 router.get('/devices/sysdate', inventoryController.getSysdateDevices);
 
-// GET /api/inventory/devices/all
+// 6. GET /api/inventory/devices/all
 router.get('/devices/all', inventoryController.getAllDevices);
 
-// GET /api/inventory/devices/dto/:deviceNumber/slno
+//7.  GET /api/inventory/devices/dto/:deviceNumber/slno
 router.get('/devices/dto/:deviceNumber/slno', inventoryController.getDeviceDTOByNumber);
 
 // GET /api/inventory/devices/:deviceNumber/slno

@@ -43,7 +43,7 @@ const validateOTP = async (req, res) => {
         };
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: 'Unauthorized'
         }) + '\n');
         return res.status(401).json(errorResponse);
     }
@@ -100,7 +100,7 @@ const refreshToken = async (req, res) => {
         };
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: 'Unauthorized'
         }) + '\n');
         return res.status(401).json(errorResponse);
     }
