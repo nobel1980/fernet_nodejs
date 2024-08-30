@@ -1,6 +1,9 @@
 const axios = require('axios');
 var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
+const { Fernet } = require('fernet-nodejs');
+const {formattedTimestamp } = require('../utils');
+
+const key = process.env.FERNET_SECRET;
 const baseUrl = process.env.BASE_URL;
 
 /** 14. Bulk invoice */

@@ -1,6 +1,9 @@
 const axios = require('axios');
 var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
+const { Fernet } = require('fernet-nodejs');
+const {formattedTimestamp } = require('../utils');
+
+const key = process.env.FERNET_SECRET;
 const baseUrl = process.env.BASE_URL;
 
 // 5.  Server system date
@@ -40,7 +43,11 @@ const getSysdateDevices = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const ciphertext = response.data.ciphertext;
+        const jsonString = Fernet.decrypt(ciphertext, key);
+        const real_text = JSON.parse(jsonString);
+        res.json(real_text);
+        
     } catch (error) {
         const errorResponse = {
             timestamp: formattedTimestamp,
@@ -173,7 +180,6 @@ const getDeviceDTOByNumber = async (req, res) => {
 // 9. Device details for inventory
 const getDeviceByNumber = async (req, res) => { 
     const deviceNumber = req.params.deviceNumber;  
-    console.log(deviceNumber);
     const authToken = req.headers['authorization'];
     const RequestType = `Device Details`;
     const url = `${baseUrl}/inventory/devices/${deviceNumber}/slno`;

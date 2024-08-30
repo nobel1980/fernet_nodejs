@@ -75,10 +75,10 @@ cron.schedule('0 0 * * *', () => {
 
 app.get("/", function(req, res) {
     // Add any desired functionality for the homepage
-    res.send("NBR TAX Middleware Homepage");
+    res.send("NBR Apps for middleware test ");
 });
 
-const PORT = 3002;
+const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });

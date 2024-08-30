@@ -1,6 +1,9 @@
 const axios = require('axios');
 var fs = require('fs');
+const { Fernet } = require('fernet-nodejs');
 const {formattedTimestamp } = require('../utils');
+
+const key = process.env.FERNET_SECRET;
 const baseUrl = process.env.BASE_URL;
 
 // Function to create a new invoice
@@ -40,7 +43,11 @@ const getPolicyList = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const ciphertext = response.data.ciphertext;
+        const jsonString = Fernet.decrypt(ciphertext, key);
+        const real_text = JSON.parse(jsonString);
+        res.json(real_text);
+        
     } catch (error) {
         const errorResponse = {
             timestamp: formattedTimestamp,
