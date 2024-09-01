@@ -1,7 +1,4 @@
-const axios = require('axios');
-var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 /** 14. Bulk invoice */
 const bulkInvoices = async (req, res) => {
@@ -12,7 +9,7 @@ const bulkInvoices = async (req, res) => {
     const url = `${baseUrl}/invoices/bulk`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -36,7 +33,7 @@ const bulkInvoices = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -45,7 +42,7 @@ const bulkInvoices = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -71,7 +68,7 @@ const createInvoice = async (req, res) => {
 
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -95,7 +92,7 @@ const createInvoice = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -104,7 +101,7 @@ const createInvoice = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -128,7 +125,7 @@ const getInvoiceItems = async (req, res) => {
 
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -152,7 +149,7 @@ const getInvoiceItems = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -161,7 +158,7 @@ const getInvoiceItems = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url

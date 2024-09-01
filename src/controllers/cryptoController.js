@@ -14,10 +14,8 @@ const encryption = (req, res) => {
 // Function to decryption data
 const decryption = (req, res) => {
     const {ciphertext} = req.body;
-    console.log(ciphertext);
     const jsonString = Fernet.decrypt(ciphertext, key);
     const real_text = JSON.parse(jsonString);
-    console.log(real_text);
     res.send(real_text);
 };
 

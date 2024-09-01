@@ -1,7 +1,4 @@
-const axios = require('axios');
-var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 /** 11. Item create */
 const createItem = async (req, res) => {
@@ -13,7 +10,7 @@ const createItem = async (req, res) => {
 
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -37,7 +34,7 @@ const createItem = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -46,7 +43,7 @@ const createItem = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -72,7 +69,7 @@ const editItem = async (req, res) => {
 
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -96,7 +93,7 @@ const editItem = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -105,7 +102,7 @@ const editItem = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -129,7 +126,7 @@ const getItemsByBinHolder = async (req, res) => {
 
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -153,7 +150,7 @@ const getItemsByBinHolder = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -162,7 +159,7 @@ const getItemsByBinHolder = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url

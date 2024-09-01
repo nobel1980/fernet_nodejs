@@ -1,7 +1,4 @@
-const axios = require('axios');
-var fs = require('fs');
-const {formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 // Function to create a new invoice
 const getPolicyList = async (req, res) => {
@@ -10,7 +7,7 @@ const getPolicyList = async (req, res) => {
     const url = `${baseUrl}/settings/policies/dto`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -34,16 +31,18 @@ const getPolicyList = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
+
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -65,7 +64,7 @@ const serviceCategory = async (req, res) => {
     const url = `${baseUrl}/settings/service/categories/all`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -89,7 +88,7 @@ const serviceCategory = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -98,7 +97,7 @@ const serviceCategory = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url

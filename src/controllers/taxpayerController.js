@@ -1,7 +1,4 @@
-const axios = require('axios');
-var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 // Function to get bin setup for a specific bin number
 const getBinSetup = (req, res) => {

@@ -1,16 +1,13 @@
-const axios = require('axios');
-var fs = require('fs');
-const { formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 // 5.  Server system date
-const getSysdateDevices = async (req, res) => {   
+const getSysdateDevices = async (req, res) => {  
     const authToken = req.headers['authorization'];
     const RequestType = `Server System Date`;
     const url = `${baseUrl}/inventory/devices/sysdate`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -34,16 +31,18 @@ const getSysdateDevices = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
+
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -65,7 +64,7 @@ const getAllDevices = async (req, res) => {
     const url = `${baseUrl}/inventory/devices/all`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -89,7 +88,7 @@ const getAllDevices = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -98,7 +97,7 @@ const getAllDevices = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -121,7 +120,7 @@ const getDeviceDTOByNumber = async (req, res) => {
     const url = `${baseUrl}/inventory/devices/dto/${deviceNumber}/slno`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -145,7 +144,7 @@ const getDeviceDTOByNumber = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -155,7 +154,7 @@ const getDeviceDTOByNumber = async (req, res) => {
     } catch (error) {
         console.log(error);
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -179,7 +178,7 @@ const getDeviceByNumber = async (req, res) => {
     const url = `${baseUrl}/inventory/devices/${deviceNumber}/slno`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -203,7 +202,7 @@ const getDeviceByNumber = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -213,7 +212,7 @@ const getDeviceByNumber = async (req, res) => {
     } catch (error) {
         console.log(error);
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -236,7 +235,7 @@ const getDeviceStatusById = async (req, res) => {
     const url = `${baseUrl}/inventory/devices/status/${deviceId}/slno`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -260,7 +259,7 @@ const getDeviceStatusById = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -270,7 +269,7 @@ const getDeviceStatusById = async (req, res) => {
     } catch (error) {
         console.log(error);
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url

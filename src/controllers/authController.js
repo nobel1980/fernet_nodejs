@@ -1,13 +1,9 @@
-// Sample implementation of authentication controller methods
-const axios = require('axios');
-var fs = require('fs');
-const {formattedTimestamp } = require('../utils');
-const baseUrl = process.env.BASE_URL;
+const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 /** 1. BIN Sign in */
 const signIn = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
+    const {ciphertext} = req.body;
+    const jsonData = decryptData(ciphertext);
     const url = `${baseUrl}/auth/signin`;
 
     try {
@@ -15,14 +11,12 @@ const signIn = async (req, res) => {
             headers: { 'Content-Type': 'application/json' }
         });
 
-        fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login", "timestamp": "${formattedTimestamp}", "status": ${response.status}, "url" : "${url}", "request" : ${jsonData},"response" : ${JSON.stringify(response.data)}}\n`);
-        res.json(response.data);
+        fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login", "timestamp": "${timestamp}", "status": ${response.status}, "url" : "${url}", "request" : ${JSON.stringify(jsonData)},"response" : ${JSON.stringify(response.data)}}\n`);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);        
     } catch (error) {
-        
-        //console.error(error);
-        //const errorResponse = `{"timestamp": "${formattedTimestamp}", "status": 500, "error": "Internal Server Error", "url" : "${url}" }\n`;
-        const errorResponse = `{"timestamp": "${formattedTimestamp}", "status": 401, "error": "Unauthorized", "url" : "${url}"}\n`;
-        fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login",  "request" : "${jsonData}","response" : ${errorResponse}}\n`);
+        const errorResponse = `{"timestamp": "${timestamp}", "status": 401, "error": "Unauthorized", "url" : "${url}"}\n`;
+        fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login",  "request" : ${JSON.stringify(jsonData)},"response" : ${errorResponse}}\n`);
         //fs.appendFileSync('app.log', errorResponse);
         const parsedErrorResponse = JSON.parse(errorResponse);
         res.status(500).json(parsedErrorResponse);
@@ -32,11 +26,12 @@ const signIn = async (req, res) => {
 /** 2. Validate OTP */
 const validateOTP = async (req, res) => {
     const authToken = req.headers['authorization'];
+    console.log(authToken);
     const RequestType = `OTP`;
     const url = `${baseUrl}/auth/validateOtp`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -60,7 +55,7 @@ const validateOTP = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
             response: response.data
@@ -69,7 +64,7 @@ const validateOTP = async (req, res) => {
         res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
@@ -86,14 +81,14 @@ const validateOTP = async (req, res) => {
 
 /** 3. Refresh Token  */
 const refreshToken = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
+    const {ciphertext} = req.body;
+    const jsonData = decryptData(ciphertext);
     const authToken = req.headers['authorization'];
     const RequestType = `Refresh Token`;
     const url = `${baseUrl}/auth/refreshtoken`;
     if (!authToken) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             statusCode: 401,
             error: 'Unauthorized',
             url,
@@ -117,16 +112,21 @@ const refreshToken = async (req, res) => {
 
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status: response.status,
             url,
+            request: jsonData,
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        //fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login", "timestamp": "${timestamp}", "status": ${response.status}, "url" : "${url}", "request" : ${JSON.stringify(jsonData)},"response" : ${JSON.stringify(response.data)}}\n`);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
+
+        //res.json(response.data);
     } catch (error) {
         const errorResponse = {
-            timestamp: formattedTimestamp,
+            timestamp: timestamp,
             status : 500,
             error: 'Internal Server Error',
             url
