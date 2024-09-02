@@ -1,4 +1,4 @@
-const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 const generateMonthlySalesReport = (req, res) => {
     // Logic to generate the monthly sales report

@@ -1,4 +1,4 @@
-const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, unauthError } = require('../utils');
 
 // 5.  Server system date
 const getSysdateDevices = async (req, res) => {  
@@ -6,17 +6,14 @@ const getSysdateDevices = async (req, res) => {
     const RequestType = `Server System Date`;
     const url = `${baseUrl}/inventory/devices/sysdate`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
+        const errorResponse = unauthError(url);
+
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -94,7 +91,8 @@ const getAllDevices = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         const errorResponse = {
             timestamp: timestamp,
@@ -150,7 +148,8 @@ const getDeviceDTOByNumber = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         console.log(error);
         const errorResponse = {
@@ -208,9 +207,9 @@ const getDeviceByNumber = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
-        console.log(error);
         const errorResponse = {
             timestamp: timestamp,
             status : 500,

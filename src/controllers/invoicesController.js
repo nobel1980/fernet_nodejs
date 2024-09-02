@@ -1,24 +1,21 @@
-const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 /** 14. Bulk invoice */
 const bulkInvoices = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
+    const {ciphertext} = req.body;
+    const jsonData = decryptData(ciphertext);
     const authToken = req.headers['authorization'];
     const RequestType = `Bulk Invoice`;
     const url = `${baseUrl}/invoices/bulk`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
+        const errorResponse = unauthError(url);
+
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -39,7 +36,8 @@ const bulkInvoices = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         const errorResponse = {
             timestamp: timestamp,
@@ -59,9 +57,8 @@ const bulkInvoices = async (req, res) => {
 
 /** 15. Create invoice */
 const createInvoice = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
-    console.log(jsonData);
+    const {ciphertext} = req.body;
+    const jsonData = decryptData(ciphertext);
     const authToken = req.headers['authorization'];
     const RequestType = `Create Invoice`;
     const url = `${baseUrl}/invoices/create`;
@@ -98,7 +95,8 @@ const createInvoice = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         const errorResponse = {
             timestamp: timestamp,
@@ -154,8 +152,8 @@ const getInvoiceItems = async (req, res) => {
             url,
             response: response.data
         }) + '\n');
-
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         const errorResponse = {
             timestamp: timestamp,

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventoryController');
+const authenticateMiddleware = require('../middleware/authenticateMiddleware');
+
+//router.use(authenticateMiddleware);
 
 // 5. GET /api/inventory/devices/sysdate
 router.get('/devices/sysdate', inventoryController.getSysdateDevices);

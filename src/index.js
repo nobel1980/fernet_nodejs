@@ -7,6 +7,7 @@ const cron = require('node-cron');
 const { DateTime } = require('luxon');
 //import bodyParser from 'body-parser';
 const { Fernet } = require('fernet-nodejs');
+const winston = require('winston');
 
 // initialize an Express application
 const app = express();
@@ -40,7 +41,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/items', itemsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/crypto', cryptoRoutes);
-
+/*
 app.use((err, req, res, next) => {
     //console.error(err.stack);
     //res.status(500).send('Something broke!');
@@ -51,14 +52,29 @@ app.use((err, req, res, next) => {
     res.status(500).json(parsedErrorResponse);
 });
 
+*/
 
+const logger = winston.createLogger({
+    level: 'error',
+    format: winston.format.simple(),
+    transports: [new winston.transports.Console()],
+  });
+  try {
+    // Code that may throw an error
+    //throw new Error('Something went wrong');
+  } catch (error) {
+    logger.error('An error occurred:', error);
+  }
 // Schedule the task to run daily at 12:00 AM in Dhaka time zone
 cron.schedule('0 0 * * *', () => {
     // Get the current date and time in Dhaka time zone
     const now = DateTime.now().setZone(dhakaTimeZone);
 
-    const folderName = now.toFormat('yyyy-MM-dd');
-    const folderPath = `./${folderName}`;
+    const folderName = now.toFormat('yyyyMMdd');
+    const folderPath = `./logs/${folderName}`;
+
+    const logFileName = `${folderName}_app.log`;
+    const logFilePath = path.join(folderPath, logFileName);
 
     // Create the folder
     fs.mkdir(folderPath, { recursive: true }, (err) => {
@@ -68,6 +84,23 @@ cron.schedule('0 0 * * *', () => {
             console.log('Folder created:', folderPath);
         }
     });
+    // Create the log file
+    fs.writeFile(logFilePath, '', (err) => {
+        if (err) {
+            console.error('Error creating log file:', err);
+        } else {
+            console.log('Log file created:', logFilePath);
+        }
+    });
+
+    const logger = winston.createLogger({
+        level: 'info',
+        format: winston.format.json(),
+        transports: [new winston.transports.Console()],
+      });
+      
+    const fileTransport = new winston.transports.File({ filename: logFilePath });
+    logger.add(fileTransport);
 }, {
     timezone: dhakaTimeZone
 });

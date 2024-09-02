@@ -1,22 +1,20 @@
-const {axios, fs, Fernet, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
 
 // Function to create a new invoice
 const getPolicyList = async (req, res) => {
     const authToken = req.headers['authorization'];
     const RequestType = `Get Policy List`;
     const url = `${baseUrl}/settings/policies/dto`;
+    
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
+        const errorResponse = unauthError(url);
+
         fs.appendFileSync('app.log', JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -94,7 +92,8 @@ const serviceCategory = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         const errorResponse = {
             timestamp: timestamp,

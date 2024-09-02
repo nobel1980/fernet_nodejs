@@ -40,7 +40,6 @@ const decryptData = (ciphertext) => {
 module.exports = {
     axios,
     fs,
-    Fernet,
     key,
     baseUrl,
     timestamp,
