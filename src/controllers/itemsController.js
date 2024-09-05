@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath } = require('../utils');
 
 /** 11. Item create */
 const createItem = async (req, res) => {
@@ -11,7 +11,7 @@ const createItem = async (req, res) => {
     if (!authToken) {
         const errorResponse = unauthError(url);
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse,
         }) + '\n');
@@ -29,7 +29,7 @@ const createItem = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -46,7 +46,7 @@ const createItem = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -65,17 +65,14 @@ const editItem = async (req, res) => {
     const url = `${baseUrl}/items/${itemId}`;
 
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -88,7 +85,7 @@ const editItem = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -106,7 +103,7 @@ const editItem = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -123,17 +120,14 @@ const getItemsByBinHolder = async (req, res) => {
     const url = `${baseUrl}/items/${binHolder}/bin`;
 
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -146,7 +140,7 @@ const getItemsByBinHolder = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -164,7 +158,7 @@ const getItemsByBinHolder = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');

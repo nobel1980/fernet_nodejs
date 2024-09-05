@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath } = require('../utils');
 
 /** 1. BIN Sign in */
 const signIn = async (req, res) => {
@@ -14,7 +14,7 @@ const signIn = async (req, res) => {
 
         //fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login", "timestamp": "${timestamp}", "status": ${response.status}, "url" : "${url}", "request" : ${JSON.stringify(jsonData)},"response" : ${JSON.stringify(response.data)}}\n`);
         
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -34,8 +34,8 @@ const signIn = async (req, res) => {
             error: 'Unauthorized',
             url
         };
-        fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login",  "request" : ${JSON.stringify(jsonData)},"response" : ${errorResponse}}\n`);
-        //fs.appendFileSync('app.log', errorResponse);
+        fs.appendFileSync(logFilePath, `{"RequestType": "Setup/BIN holder Login",  "request" : ${JSON.stringify(jsonData)},"response" : ${errorResponse}}\n`);
+        //fs.appendFileSync(logFilePath, errorResponse);
 
         const encryptedErrResponse = encryptData(errorResponse);
         res.json(encryptedErrResponse);
@@ -52,17 +52,14 @@ const validateOTP = async (req, res) => {
     const RequestType = `OTP`;
     const url = `${baseUrl}/auth/validateOtp`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -75,7 +72,7 @@ const validateOTP = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -93,7 +90,7 @@ const validateOTP = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -110,19 +107,13 @@ const refreshToken = async (req, res) => {
     const RequestType = `Refresh Token`;
     const url = `${baseUrl}/auth/refreshtoken`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
-            RequestType,
-            response: 'Unauthorized'
-        }) + '\n');
+        const errorResponse = unauthError(url);
 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType,
+            response: errorResponse,
+        }) + '\n');
         const encryptedErrResponse = encryptData(errorResponse);
-        //res.status(500).json(encryptedErrResponse);
         return res.status(401).json(encryptedErrResponse);
     }
 
@@ -136,7 +127,7 @@ const refreshToken = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -158,7 +149,7 @@ const refreshToken = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');

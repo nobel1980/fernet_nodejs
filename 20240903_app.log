@@ -1,0 +1,1 @@
+{"RequestType":"Server System Date","response":{"timestamp":"2024-09-03T16:10:20.859+06:00","statusCode":401,"error":"Unauthorized","url":"http://152.69.210.188:8088/efdms/services/api/inventory/devices/sysdate"}}

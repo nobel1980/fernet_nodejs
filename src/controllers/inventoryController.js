@@ -1,14 +1,15 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, unauthError } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, unauthError, logFilePath } = require('../utils');
 
 // 5.  Server system date
 const getSysdateDevices = async (req, res) => {  
     const authToken = req.headers['authorization'];
     const RequestType = `Server System Date`;
     const url = `${baseUrl}/inventory/devices/sysdate`;
+    console.log('Log path check:',logFilePath);
     if (!authToken) {
         const errorResponse = unauthError(url);
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse,
         }) + '\n');
@@ -26,7 +27,7 @@ const getSysdateDevices = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -45,7 +46,7 @@ const getSysdateDevices = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -60,17 +61,14 @@ const getAllDevices = async (req, res) => {
     const RequestType = `All Devices`;
     const url = `${baseUrl}/inventory/devices/all`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -83,7 +81,7 @@ const getAllDevices = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -101,7 +99,7 @@ const getAllDevices = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -117,17 +115,14 @@ const getDeviceDTOByNumber = async (req, res) => {
     const RequestType = `Device Status`;
     const url = `${baseUrl}/inventory/devices/dto/${deviceNumber}/slno`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -140,7 +135,7 @@ const getDeviceDTOByNumber = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -159,7 +154,7 @@ const getDeviceDTOByNumber = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -176,17 +171,14 @@ const getDeviceByNumber = async (req, res) => {
     const RequestType = `Device Details`;
     const url = `${baseUrl}/inventory/devices/${deviceNumber}/slno`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Unauthorized'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -199,7 +191,7 @@ const getDeviceByNumber = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -217,7 +209,7 @@ const getDeviceByNumber = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -233,17 +225,14 @@ const getDeviceStatusById = async (req, res) => {
     const RequestType = `Device Status NBR`;
     const url = `${baseUrl}/inventory/devices/status/${deviceId}/slno`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -256,7 +245,7 @@ const getDeviceStatusById = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -274,7 +263,7 @@ const getDeviceStatusById = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');

@@ -1,15 +1,15 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath } = require('../utils');
 
 // Function to create a new invoice
 const getPolicyList = async (req, res) => {
     const authToken = req.headers['authorization'];
     const RequestType = `Get Policy List`;
     const url = `${baseUrl}/settings/policies/dto`;
-    
+
     if (!authToken) {
         const errorResponse = unauthError(url);
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse,
         }) + '\n');
@@ -27,7 +27,7 @@ const getPolicyList = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -46,7 +46,7 @@ const getPolicyList = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
@@ -61,17 +61,14 @@ const serviceCategory = async (req, res) => {
     const RequestType = `Get Service Category List`;
     const url = `${baseUrl}/settings/service/categories/all`;
     if (!authToken) {
-        const errorResponse = {
-            timestamp: timestamp,
-            statusCode: 401,
-            error: 'Unauthorized',
-            url,
-        };
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        const errorResponse = unauthError(url);
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
-            response: 'Internal Server Error'
+            response: errorResponse,
         }) + '\n');
-        return res.status(401).json(errorResponse);
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(401).json(encryptedErrResponse);
     }
 
     const token = authToken.split(' ')[1];
@@ -84,7 +81,7 @@ const serviceCategory = async (req, res) => {
             }
         });
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             timestamp: timestamp,
             status: response.status,
@@ -102,7 +99,7 @@ const serviceCategory = async (req, res) => {
             url
         };
 
-        fs.appendFileSync('app.log', JSON.stringify({ 
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
             response: errorResponse
         }) + '\n');
