@@ -86,6 +86,44 @@ const decryptData = (ciphertext) => {
 };
 
 
+const errorText = (errorCode) => {
+    switch (errorCode) {
+        case 400:
+          return "Bad request";
+          break;
+        case 401:
+            return "Unauthorized";
+          break;
+        case 403:
+            return "Forbidden";
+        break; 
+        case 404:
+          return "Not Found";
+          break;
+        case 405:
+            return "Method Not Allowed";
+          break;
+        case 408:
+            return "Request Timeout";
+        break;
+        case 500:
+            return "Internal Server Error";
+          break;
+        case 502:
+            return "Bad Gateway";
+        break;  
+        case 503:
+            return "Service Unavailable";
+          break;
+        case 504:
+            return "Gateway Timeout";
+        break;         
+        default:
+            return "Internal Server Error";
+      }
+};
+
+
 module.exports = {
     axios,
     fs,
@@ -96,5 +134,6 @@ module.exports = {
     unauthError,
     createLogFileIfMissing,
     encryptData,
-    decryptData,     
+    decryptData, 
+    errorText,    
 }

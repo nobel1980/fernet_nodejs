@@ -2,8 +2,9 @@
   "name": "nbrtax",
   "version": "1.0.0",
   "main": "src/index.js",
-  "scripts": {
-    "dev": "nodemon tut69.js"
+  "scripts": {    
+    "dev": "nodemon tut69.js",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "Shahidul Islam Akand",
@@ -15,6 +16,7 @@
     "express": "^4.19.2",
     "fernet-nodejs": "^1.0.6",
     "luxon": "^3.5.0",
+    "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
     "path": "^0.12.7",
     "winston": "^3.14.2"

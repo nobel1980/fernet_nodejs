@@ -37,6 +37,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/items', itemsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/crypto', cryptoRoutes);
+
 /*
 app.use((err, req, res, next) => {
     //console.error(err.stack);
@@ -91,7 +92,7 @@ app.get("/", function(req, res) {
     res.send("NBR TAX Middleware Homepage");
 });
 
-const PORT = 3002;
+const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
