@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 // 5.  Server system date
 const getSysdateDevices = async (req, res) => {  
@@ -52,7 +52,8 @@ const getSysdateDevices = async (req, res) => {
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
           } else if (error.request) {
-            const errorCode = error.request.status;
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -63,7 +64,14 @@ const getSysdateDevices = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
           } else {
             const errorResponse = {
@@ -78,7 +86,7 @@ const getSysdateDevices = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
           }        
@@ -135,7 +143,8 @@ const getAllDevices = async (req, res) => {
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
           } else if (error.request) {
-            const errorCode = error.request.status;
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -146,7 +155,14 @@ const getAllDevices = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
           } else {
             const errorResponse = {
@@ -161,7 +177,7 @@ const getAllDevices = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
           }        
@@ -219,7 +235,8 @@ const getDeviceDTOByNumber = async (req, res) => {
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
           } else if (error.request) {
-            const errorCode = error.request.status;
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -230,7 +247,14 @@ const getDeviceDTOByNumber = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
           } else {
             const errorResponse = {
@@ -245,7 +269,7 @@ const getDeviceDTOByNumber = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
           }        
@@ -304,7 +328,8 @@ const getDeviceByNumber = async (req, res) => {
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
           } else if (error.request) {
-            const errorCode = error.request.status;
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -315,7 +340,14 @@ const getDeviceByNumber = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
           } else {
             const errorResponse = {
@@ -330,7 +362,7 @@ const getDeviceByNumber = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
           }        
@@ -387,7 +419,8 @@ const getDeviceStatusById = async (req, res) => {
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
           } else if (error.request) {
-            const errorCode = error.request.status;
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -398,7 +431,14 @@ const getDeviceStatusById = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
           } else {
             const errorResponse = {
@@ -413,7 +453,7 @@ const getDeviceStatusById = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
           }        

@@ -51,8 +51,9 @@ const getBinSetup = async (req, res) => {
 
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
-            } else if (error.request) {
-            const errorCode = error.request.status;
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -63,9 +64,16 @@ const getBinSetup = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
-            } else {
+          } else {
             const errorResponse = {
                 timestamp: timestamp,
                 status : 500,
@@ -78,10 +86,10 @@ const getBinSetup = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
-            }        
+          }        
     }
 };
 
@@ -136,8 +144,9 @@ const getBinStatus = async (req, res) => {
 
             const encryptedErrResponse = encryptData(error.response.data);
             res.json(encryptedErrResponse);
-            } else if (error.request) {
-            const errorCode = error.request.status;
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
             const errorMessage = errorText(errorCode);
             
             fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -148,9 +157,16 @@ const getBinStatus = async (req, res) => {
                 Message: errorMessage
             }) + '\n');
 
-            const encryptedErrResponse = encryptData(error.request.data);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
             res.json(encryptedErrResponse);
-            } else {
+          } else {
             const errorResponse = {
                 timestamp: timestamp,
                 status : 500,
@@ -163,10 +179,10 @@ const getBinStatus = async (req, res) => {
                 response: errorResponse
             }) + '\n');
             
-            res.status(500).json(errorResponse);
+            //res.status(500).json(errorResponse);
             const encryptedErrResponse = encryptData(errorResponse);
             res.json(encryptedErrResponse);
-            }        
+          }        
     }
 };
 module.exports = {
