@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 // Function to create a new invoice
 const getPolicyList = async (req, res) => {
@@ -117,7 +117,8 @@ const serviceCategory = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

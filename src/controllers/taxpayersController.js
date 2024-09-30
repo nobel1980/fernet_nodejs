@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 10 . Bin Holder outlet setup */
 const getBinSetup = async (req, res) => {
@@ -25,7 +25,8 @@ const getBinSetup = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -118,7 +119,8 @@ const getBinStatus = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

@@ -24,7 +24,8 @@ const getSysdateDevices = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -116,7 +117,8 @@ const getAllDevices = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -208,7 +210,8 @@ const getDeviceDTOByNumber = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -301,7 +304,8 @@ const getDeviceByNumber = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -393,7 +397,8 @@ const getDeviceStatusById = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

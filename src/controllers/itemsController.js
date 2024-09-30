@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 11. Item create */
 const createItem = async (req, res) => {
@@ -112,7 +112,8 @@ const editItem = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -205,7 +206,8 @@ const getItemsByBinHolder = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

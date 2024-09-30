@@ -2,9 +2,28 @@ const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, err
 
 /** 1. BIN Sign in */
 const signIn = async (req, res) => {
-    const {ciphertext} = req.body;
-    const jsonData = decryptData(ciphertext);
-    console.log(jsonData);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+        url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const RequestType = `BIN login`;
     const url = `${baseUrl}/auth/signin`;
     const headers = { 'Content-Type': 'application/json' };
@@ -82,15 +101,36 @@ const signIn = async (req, res) => {
 
 /** 2. Validate OTP */
 const validateOTP = async (req, res) => {
-    const {ciphertext} = req.body;
-    const jsonData = decryptData(ciphertext);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+        console.log(jsonData);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
     const RequestType = `OTP`;
     const url = `${baseUrl}/auth/validateOtp`;
     try {
         const response = await axios.post(url, jsonData, {
             headers: { 
                 'Content-Type': 'application/json',
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -160,8 +200,29 @@ const validateOTP = async (req, res) => {
 
 /** 3. Refresh Token  */
 const refreshToken = async (req, res) => {
-    const {ciphertext} = req.body;
-    const jsonData = decryptData(ciphertext);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+        console.log(jsonData);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const authToken = req.headers['authorization'];
     const RequestType = `Refresh Token`;
     const url = `${baseUrl}/auth/refreshtoken`;
@@ -183,7 +244,8 @@ const refreshToken = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

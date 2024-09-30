@@ -1,9 +1,29 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 14. Bulk invoice */
 const bulkInvoices = async (req, res) => {
-    const {ciphertext} = req.body;
-    const jsonData = decryptData(ciphertext);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const authToken = req.headers['authorization'];
     const RequestType = `Bulk Invoice`;
     const url = `${baseUrl}/invoices/bulk`;
@@ -92,11 +112,31 @@ const bulkInvoices = async (req, res) => {
           }        
     }
 };
-
 /** 15. Create invoice */
 const createInvoice = async (req, res) => {
-    const {ciphertext} = req.body;
-    const jsonData = decryptData(ciphertext);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+        console.log(jsonData);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const authToken = req.headers['authorization'];
     const RequestType = `Create Invoice`;
     const url = `${baseUrl}/invoices/create`;
@@ -119,7 +159,8 @@ const createInvoice = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -212,7 +253,8 @@ const getInvoiceItems = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

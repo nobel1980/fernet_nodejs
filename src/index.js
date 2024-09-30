@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const { DateTime } = require('luxon');
 const winston = require('winston');
 
-const { logFilePath, createLogFileIfMissing } = require('./utils');
+const { logFilePath, createLogFileIfMissing, encryptData, decryptData,} = require('./utils');
 
 const app = express();
 
@@ -44,8 +44,8 @@ app.use('/api/crypto', cryptoRoutes);
 
 /*
 app.use((err, req, res, next) => {
-    //console.error(err.stack);
-    //res.status(500).send('Something broke!');
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
     const requestedUrl = req.url || 'Unknown URL';
     const errorResponse = `{"timestamp": "${formattedTimestamp}", "status": 500, "error": "Internal Server Error", "url" : "${requestedUrl}" }\n`;
     fs.appendFileSync('app.log', errorResponse);
@@ -54,6 +54,24 @@ app.use((err, req, res, next) => {
 });
 
 */
+
+app.use((req, res, next) => {
+    const errorResponse = {
+        timestamp: timestamp,
+        status: 404,
+        error: "Not Found",
+        url : req.originalUrl
+    };
+
+    fs.appendFileSync(logFilePath, JSON.stringify({ 
+        RequestType: 'Request',
+        response: errorResponse
+    }) + '\n');
+
+    const encryptedErrResponse = encryptData(errorResponse);
+    res.json(encryptedErrResponse);
+});
+
 
 const logger = winston.createLogger({
     level: 'error',

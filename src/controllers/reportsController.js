@@ -1,9 +1,29 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 20 . Monthly Sales Report */
 const generateMonthlySalesReport = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const authToken = req.headers['authorization'];
     const RequestType = `Monthly Sales Report`;
     const url = `${baseUrl}/reports/monthly/sales`;
@@ -26,7 +46,8 @@ const generateMonthlySalesReport = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -94,9 +115,28 @@ const generateMonthlySalesReport = async (req, res) => {
 };
 /** 21. Monthly Sales Summary */
 const generateMonthlySalesSummary = async (req, res) => {
-    const data = req.body;
-    const jsonData = JSON.stringify(data);
-    console.log(jsonData);
+    const { ciphertext } = req.body;
+    let jsonData;
+
+    try {
+        jsonData = decryptData(ciphertext);
+    } catch (decryptError) {
+        const errorResponse = {
+            timestamp: timestamp,
+            status: 400,
+            error: "Invalid ciphertext or decryption error",
+            url : req.originalUrl
+        };
+
+        fs.appendFileSync(logFilePath, JSON.stringify({ 
+            RequestType: 'Decryption Error',
+            response: errorResponse
+        }) + '\n');
+        
+        const encryptedErrResponse = encryptData(errorResponse);
+        return res.status(400).json(encryptedErrResponse);
+    }
+
     const authToken = req.headers['authorization'];
     const RequestType = `Monthly Sales Report`;
     const url = `${baseUrl}/reports/monthly/sales/summary`;
@@ -119,7 +159,8 @@ const generateMonthlySalesSummary = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 

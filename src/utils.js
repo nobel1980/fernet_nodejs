@@ -10,7 +10,7 @@ const key = process.env.FERNET_SECRET;
 const baseUrl = process.env.BASE_URL;
 //const liveUrl = process.env.LIVE_URL;
 
-const timeout = 5000;
+const timeout = 3000;
 
 // Dhaka time zone (Asia/Dhaka)
 const formattedTimestamp = () => {
