@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
 
 // Function to create a new invoice
 const getPolicyList = async (req, res) => {
@@ -24,7 +24,8 @@ const getPolicyList = async (req, res) => {
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            timeout
         });
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
@@ -39,22 +40,59 @@ const getPolicyList = async (req, res) => {
         res.json(encryptedResponse);
 
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
 
-        res.status(500).json(errorResponse);
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            //res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
-
 // Function to all service category
 const serviceCategory = async (req, res) => {
     const authToken = req.headers['authorization'];
@@ -92,19 +130,49 @@ const serviceCategory = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+            const errorCode = error.request.status;
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
 
-        res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(error.request.data);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 

@@ -20,6 +20,8 @@ const invoicesRoutes = require('./routes/invoicesRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const itemsRoutes = require('./routes/itemsRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+// const reportsRoutes = require('./routes/reportsRoutes');
+// const taxpayerRoutes = require('./routes/taxpayerRoutes');
 const cryptoRoutes = require('./routes/cryptoRoutes');
 
 // Middleware to parse JSON bodies
@@ -36,6 +38,8 @@ app.use('/api/invoices', invoicesRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/items', itemsRoutes);
 app.use('/api/settings', settingsRoutes);
+// app.use('/api/reports', reportsRoutes);
+// app.use('/api/taxpayer', taxpayerRoutes);
 app.use('/api/crypto', cryptoRoutes);
 
 /*

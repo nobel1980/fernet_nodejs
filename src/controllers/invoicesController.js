@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode } = require('../utils');
 
 /** 14. Bulk invoice */
 const bulkInvoices = async (req, res) => {
@@ -39,19 +39,48 @@ const bulkInvoices = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+            const errorCode = error.request.status;
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
 
-        res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(error.request.data);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 
@@ -95,19 +124,49 @@ const createInvoice = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+            const errorCode = error.request.status;
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
 
-        res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(error.request.data);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 
@@ -149,21 +208,52 @@ const getInvoiceItems = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+            const errorCode = error.request.status;
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
 
-        res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(error.request.data);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
+
 module.exports = {
     bulkInvoices,
     createInvoice,

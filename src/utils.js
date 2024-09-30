@@ -10,6 +10,8 @@ const key = process.env.FERNET_SECRET;
 const baseUrl = process.env.BASE_URL;
 //const liveUrl = process.env.LIVE_URL;
 
+const timeout = 5000;
+
 // Dhaka time zone (Asia/Dhaka)
 const formattedTimestamp = () => {
     const currentTimestamp = DateTime.utc();
@@ -85,6 +87,36 @@ const decryptData = (ciphertext) => {
     return JSON.parse(jsonString);
 };
 
+const errorTextToCode = (errorStatus) => {
+    switch (errorStatus) {
+        case 'ECONNABORTED':
+          return 408;
+          break;
+        case 'ENOTFOUND':
+            return 404;
+          break; 
+        case 'EHOSTUNREACH':
+          return 503;
+          break;
+        case 'ETIMEDOUT':
+            return 408;
+          break;
+        case 'EAI_AGAIN':
+            return 503;
+        break;
+        case 'ECONNRESET':
+            return 500;
+          break;
+        case 'EPROTO':
+            return 502;
+        break;  
+        case 'EPIPE':
+            return 500;
+          break;               
+        default:
+            return 500;
+      }
+};
 
 const errorText = (errorCode) => {
     switch (errorCode) {
@@ -117,7 +149,7 @@ const errorText = (errorCode) => {
           break;
         case 504:
             return "Gateway Timeout";
-        break;         
+        break;               
         default:
             return "Internal Server Error";
       }
@@ -134,6 +166,8 @@ module.exports = {
     unauthError,
     createLogFileIfMissing,
     encryptData,
-    decryptData, 
-    errorText,    
+    decryptData,
+    errorTextToCode, 
+    errorText,  
+    timeout,  
 }

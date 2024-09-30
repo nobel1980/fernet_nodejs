@@ -1,21 +1,19 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 1. BIN Sign in */
 const signIn = async (req, res) => {
     const {ciphertext} = req.body;
     const jsonData = decryptData(ciphertext);
+    console.log(jsonData);
     const RequestType = `BIN login`;
     const url = `${baseUrl}/auth/signin`;
     const headers = { 'Content-Type': 'application/json' };
-    const timeout = 5000;
     //console.log('Log path check:',logFilePath);
     try {
         const response = await axios.post(url, jsonData, {
             headers,
             timeout
         });
-
-        //fs.appendFileSync('app.log', `{"RequestType": "Setup/BIN holder Login", "timestamp": "${timestamp}", "status": ${response.status}, "url" : "${url}", "request" : ${JSON.stringify(jsonData)},"response" : ${JSON.stringify(response.data)}}\n`);
         
         fs.appendFileSync(logFilePath, JSON.stringify({ 
             RequestType,
@@ -28,19 +26,57 @@ const signIn = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);        
     } catch (error) {
-        console.log(error);
-        //const errorResponse = `{"timestamp": "${timestamp}", "status": 401, "error": "Unauthorized", "url" : "${url}"}\n`;
-        
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 401,
-            error: 'Unauthorized',
-            url
-        };
-        fs.appendFileSync(logFilePath, `{"RequestType": "Setup/BIN holder Login",  "request" : ${JSON.stringify(jsonData)},"response" : ${errorResponse}}\n`);
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        const encryptedErrResponse = encryptData(errorResponse);
-        res.json(encryptedErrResponse);
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
+
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            //res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 
@@ -48,10 +84,8 @@ const signIn = async (req, res) => {
 const validateOTP = async (req, res) => {
     const {ciphertext} = req.body;
     const jsonData = decryptData(ciphertext);
-    console.log(jsonData);
     const RequestType = `OTP`;
     const url = `${baseUrl}/auth/validateOtp`;
-    //console.log(jsonData);
     try {
         const response = await axios.post(url, jsonData, {
             headers: { 
@@ -67,34 +101,60 @@ const validateOTP = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse);
     } catch (error) {
         if (error.response) {
-            const errorCode = error.response.status;
-            const errorMessage = errorText(errorCode);
-            console.log(errorMessage);
-          } else if (error.request) {
-            // The request was made, but no response was received
-            console.log('No response received:', error.request);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log('Error:', error.message);
-          }
-          
-        //console.log(error);
-        const errorResponse = {
-            timestamp: timestamp,
-            //status : errorCode,
-            //error: errorMessage,
-            url
-        };
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
-        
-        res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
+
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            //res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 
@@ -139,21 +199,58 @@ const refreshToken = async (req, res) => {
         const encryptedResponse = encryptData(response.data);
         res.json(encryptedResponse);
 
-        //res.json(response.data);
     } catch (error) {
-        const errorResponse = {
-            timestamp: timestamp,
-            status : 500,
-            error: 'Internal Server Error',
-            url
-        };
+        if (error.response) {
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: error.response.status,
+                url,
+                response: error.response.data
+            }) + '\n');
 
-        fs.appendFileSync(logFilePath, JSON.stringify({ 
-            RequestType,
-            response: errorResponse
-        }) + '\n');
-        const encryptedErrResponse = encryptData(errorResponse);
-        res.status(500).json(encryptedErrResponse);
+            const encryptedErrResponse = encryptData(error.response.data);
+            res.json(encryptedErrResponse);
+          } else if (error.request) {
+             const statusCode = error.code;
+             const errorCode = errorTextToCode(statusCode);
+            const errorMessage = errorText(errorCode);
+            
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                timestamp: timestamp,
+                status: errorCode,
+                url,
+                Message: errorMessage
+            }) + '\n');
+
+            const errorRuquest = {
+                timestamp: timestamp,
+                statusCode: errorCode,
+                error: errorMessage,
+                url,
+            };
+
+            const encryptedErrResponse = encryptData(errorRuquest);
+            res.json(encryptedErrResponse);
+          } else {
+            const errorResponse = {
+                timestamp: timestamp,
+                status : 500,
+                error: "Internal Server Error",
+                url
+            };
+    
+            fs.appendFileSync(logFilePath, JSON.stringify({ 
+                RequestType,
+                response: errorResponse
+            }) + '\n');
+            
+            //res.status(500).json(errorResponse);
+            const encryptedErrResponse = encryptData(errorResponse);
+            res.json(encryptedErrResponse);
+          }        
     }
 };
 
