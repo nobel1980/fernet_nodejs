@@ -1,4 +1,5 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
+const { log } = require('winston');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, unauthError, errorText, errorTextToCode, timeout } = require('../utils');
 
 /** 10 . Bin Holder outlet setup */
 const getBinSetup = async (req, res) => {
@@ -101,6 +102,7 @@ const getBinStatus = async (req, res) => {
     const RequestType = `Taxpayer BIN Status`;
     const url = `${baseUrl}/taxpayers/status/${binNumber}/bin`;
 
+    console.log(binNumber);
     if (!authToken) {
         const errorResponse = unauthError(url);
 

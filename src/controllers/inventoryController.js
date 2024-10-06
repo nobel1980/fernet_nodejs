@@ -1,4 +1,4 @@
-const {axios, fs, timestamp, baseUrl, encryptData, decryptData, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
+const {axios, fs, timestamp, baseUrl, encryptData, decryptData, unauthError, logFilePath, errorText, errorTextToCode, timeout } = require('../utils');
 
 // 5.  Server system date
 const getSysdateDevices = async (req, res) => {  
@@ -278,7 +278,6 @@ const getDeviceDTOByNumber = async (req, res) => {
           }        
     }
 };
-
 // 9. Device details for inventory
 const getDeviceByNumber = async (req, res) => { 
     const deviceNumber = req.params.deviceNumber;  
@@ -377,7 +376,7 @@ const getDeviceByNumber = async (req, res) => {
 const getDeviceStatusById = async (req, res) => { 
     const deviceId = req.params.deviceId;  
     const authToken = req.headers['authorization'];
-    const RequestType = `Device Status NBR`;
+    const RequestType = `Device Status`;
     const url = `${baseUrl}/inventory/devices/status/${deviceId}/slno`;
     if (!authToken) {
         const errorResponse = unauthError(url);
@@ -409,7 +408,8 @@ const getDeviceStatusById = async (req, res) => {
             response: response.data
         }) + '\n');
 
-        res.json(response.data);
+        const encryptedResponse = encryptData(response.data);
+        res.json(encryptedResponse); 
     } catch (error) {
         if (error.response) {
             

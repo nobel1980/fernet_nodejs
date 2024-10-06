@@ -1,8 +1,9 @@
 # Use the official Node.js image as the base image
-FROM node:18
+FROM node:20
 
 # Set the working directory in the container
-WORKDIR /d/development/node/nbrtax
+#WORKDIR /d/development/node/nbrtax
+WORKDIR /usr/src
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./

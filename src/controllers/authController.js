@@ -12,7 +12,7 @@ const signIn = async (req, res) => {
             timestamp: timestamp,
             status: 400,
             error: "Invalid ciphertext or decryption error",
-        url : req.originalUrl
+            url : req.originalUrl
         };
 
         fs.appendFileSync(logFilePath, JSON.stringify({ 
